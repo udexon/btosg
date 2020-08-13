@@ -38,9 +38,10 @@ btosgWorld myWorld;
 
 btosgBox *myBox;
 
-
-
-btosgVehicle *myVehicle;
+#include <stack>
+std::stack<std::string> mystack;
+std::stack<btosgVehicle*> s_V;
+btosgVehicle *myVehicle, *myVehicl, *p_V;
 
 // class to handle events
 class EventHandler : public osgGA::GUIEventHandler
@@ -200,6 +201,35 @@ int main()
     myVehicle->setMass(800.);
     myWorld.addObject( myVehicle );
     myVehicle->printInfo();
+    
+    // Phoscript 2020-08-13
+    
+    if (1) {    
+    // Car
+        myVehicl = new btosgVehicle(&myWorld);
+        myVehicl->setPosition(btosgVec3(up*3.));
+        myVehicl->setName("Vehicle");
+        myVehicl->setMass(800.);
+        myWorld.addObject( myVehicl );
+        myVehicl->printInfo();
+        
+        s_V.push(new btosgVehicle(&myWorld));
+        p_V = s_V.top();
+        p_V->setPosition(btosgVec3(up*3.));
+        p_V->setName("Vehicle");
+        p_V->setMass(800.);
+        myWorld.addObject( p_V );
+        p_V->printInfo();
+
+
+        s_V.push(new btosgVehicle(&myWorld));
+        p_V = s_V.top();
+        p_V->setPosition(btosgVec3(up*3.));
+        p_V->setName("Vehicle");
+        p_V->setMass(800.);
+        myWorld.addObject( p_V );
+        p_V->printInfo();
+    }
 
     {
         BlockGreen *myBlock;
