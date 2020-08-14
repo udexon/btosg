@@ -246,7 +246,7 @@ int main()
         myWorld.addObject( p_V );
         p_V->printInfo();
         
-        sm_newcar();
+        // sm_newcar();
     }
 
     {
