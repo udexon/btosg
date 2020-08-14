@@ -185,20 +185,6 @@ public:
     BlockBlue(float x, float z) : BlockBlue(x,3.,z) {};
 };
 
-
-// Phos Stack Machine 2020-08-06
-std::stack<void*> sm_S;
-std::stack<std::string> sm_SS;
-
-void *sm_pop()
-{
-  void *t = sm_S.top();
-  sm_S.pop();
-  
-  return t;
-
-}
-
 int sm_newcar()
 {
     btosgVec3 up(0., 0., 1.);
@@ -213,159 +199,7 @@ int sm_newcar()
     p_V->setMass(800.);
     myWorld.addObject( p_V );
     p_V->printInfo();
-    
-    return 0;
 }
-
-
-void foo() { std::cout << "foo()"; }
-void boo() { std::cout << "boo()"; }
-void too() { std::cout << "too()"; }
-void goo() { std::cout << "goo()"; }
-
-int map_func(std::string func) {
-  std::map<std::string, std::function<void()>> functions;
-  functions["foo"] = foo;
-  functions["boo"] = boo;
-  functions["too"] = too;
-  functions["goo"] = goo;
-  // functions["svp:"] = sm_svp;
-  // functions[ "dJointSetHinge2Param:" ] = sm_dJointSetHinge2Param;
-  functions["newcar:"] = sm_newcar;
-  functions["p:"] = sm_pop;
-
-  // std::string func;
-  // std::cin >> func;
-  if (functions.find(func) != functions.end()) {
-    functions[func]();
-  }
-  return 0;
-}
-
-
-template <typename T>
-using is_string = std::is_constructible<std::string, T>;
-
-template <typename T> const char* sm_typeof(T&) { return "unknown"; }    // default
-template<> const char* sm_typeof(int&) { return "int"; }
-template<> const char* sm_typeof(float&) { return "float"; }
-template<> const char* sm_typeof(std::string&) { return "string"; }
-template<> const char* sm_typeof(float*&) { return "ptr_float"; }
-template<> const char* sm_typeof(void*&) { return "ptr_void"; }
-template<> const char* sm_typeof(char*&) { return "ptr_char"; }
-
-
-// template functions sm_lastchar
-template <typename T> const char* sm_lastchar(T& t) { 
-std::cout << "    DEFAULT sm_lastchar " << t << "  is_string " << is_string<decltype(t)>::value <<std::endl;
-return "unknown "; } 
-
-template<> const char* sm_lastchar(int& t) { 
-std::cout << "    int sm_lastchar " <<  t <<std::endl;
-return "unknown "; } 
-
-/*
-template<> const char* sm_lastchar(dReal& t) { 
-std::cout << "    dReal sm_lastchar " <<  t <<std::endl;
-return "unknown "; } 
-
-template<> const char* sm_lastchar(dJointID& t) { 
-std::cout << "    dJointID sm_lastchar " <<  t <<std::endl;
-return "unknown "; } 
-
-template<> const char* sm_lastchar(dParamVel2& t) { 
-std::cout << "    dParamVel2 sm_lastchar " <<  t <<std::endl;
-return "unknown "; } 
-*/
-
-template<> const char* sm_lastchar(std::string& t) 
-{ 
-    std::cout << "    sm_lastchar " << t.back() <<std::endl;
-    
-    if (t.back()==':') {
-        std::cout << "    is colon " << t.back() <<std::endl;
-
-        map_func(t);
-    }
-    return "string "+t.back(); 
-}
-
-template<> const char* sm_lastchar(float*& t) { 
-    sm_S.push((void*)t);
-    return "ptr_float"; 
-}
-
-// const char* sm_lastchar(std::string&) { return s.back(); }
-// const char* sm_lastchar(std::string&) { return s.back(); }
-
-template <typename T>
-void funcvar(T t) 
-{
-    // std::cout << t << std::endl ;
-    
-    std::cout << t << ' ' ;
-    std::cout << typeid(t).name() << ' ' ;
-    std::cout << std::is_function<decltype(t)>::value << ' ';
-    std::cout << sm_typeof(t) <<std::endl  ;
-}
-
-template<typename T, typename... Args>
-void funcvar(T t, Args... args) // recursive variadic function
-{
-    std::cout << t << ' ' ;
-    std::cout << typeid(t).name() << ' ' ;
-    std::cout << std::is_function<decltype(t)>::value << ' ';
-    std::cout << sm_typeof(t) <<std::endl  ;
-
-    funcvar(args...) ;
-}
-
-
-
-
-// sm_proc recursive variadic 
-template <typename T>
-void sm_proc(T t) 
-{
-    // std::cout << t << std::endl ;
-    
-    std::cout << t << ' ' ;
-    std::cout << typeid(t).name() << ' ' ;
-    std::cout << std::is_function<decltype(t)>::value << ' ';
-    std::cout << "    is_string " << is_string<decltype(t)>::value << ' ';
-    std::cout << sm_typeof(t) <<std::endl  ;
-    
-    if ( (is_string<decltype(t)>::value)==1 ) {
-      // std::cout << "    last char " << t.back() <<std::endl  ;
-      // std::cout << "    last char "  <<std::endl  ;
-      std::string s_t(t);
-      std::cout << "    s_t " << s_t << "    last char " << sm_lastchar(s_t) <<std::endl  ;
-    }
-    else sm_lastchar(t); // sm_S.push(t);
-}
-
-
-
-template<typename T, typename... Args>
-void sm_proc(T t, Args... args) // recursive variadic function
-{
-    std::cout << t << ' ' ;
-    std::cout << typeid(t).name() << ' ' ;
-    std::cout << std::is_function<decltype(t)>::value << ' ';
-    std::cout << "    is_string " << is_string<decltype(t)>::value << ' ';
-    std::cout << sm_typeof(t) <<std::endl  ;
-
-    // if (1) {
-    if ( (is_string<decltype(t)>::value)==1 ) {
-      // std::cout << "    last char " << t.back() <<std::endl  ;
-      // std::cout << "    last char "  <<std::endl  ;
-      std::cout << "    last char " << sm_lastchar(t) <<std::endl  ;
-    }
-    else sm_lastchar(t); // sm_S.push(t);
-
-    sm_proc(args...) ;
-}
-
 
 int main()
 {
@@ -395,6 +229,14 @@ int main()
         myWorld.addObject( myVehicl );
         myVehicl->printInfo();
         
+        s_V.push(new btosgVehicle(&myWorld));
+        p_V = s_V.top();
+        p_V->setPosition(btosgVec3(up*3.));
+        p_V->setName("Vehicle");
+        p_V->setMass(800.);
+        myWorld.addObject( p_V );
+        p_V->printInfo();
+
 
         s_V.push(new btosgVehicle(&myWorld));
         p_V = s_V.top();
@@ -405,8 +247,6 @@ int main()
         p_V->printInfo();
         
         sm_newcar();
-        
-        sm_proc( "newcar:" );
     }
 
     {
